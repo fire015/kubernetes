@@ -1,0 +1,14 @@
+version: "2"
+
+services:
+  nginx:
+    image: fire015/nginx:v1
+    build:
+      dockerfile: ./infra/nginx/Dockerfile
+      context: .
+
+  app:
+    image: fire015/app:v1
+    build:
+      dockerfile: ./infra/app/Dockerfile
+      context: .

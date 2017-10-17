@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# The first arg is the command to run in the script,
+# everything remaining is a list of params passed to the command
+COMMAND=$1
+shift # remove the first element from the args array
+ARGS=$@
+
+function help {
+    cat <<EOF
+Usage:
+    help                            Show this help text
+    build                           Build the docker images locally
+    deploy                          Deploy all services
+    destroy                         Destroy all services
+
+EOF
+}
+
+function main {
+    case $COMMAND in
+        build)
+            build_images
+            ;;
+        deploy)
+            deploy_all
+            ;;
+        destroy)
+            destroy_all
+            ;;
+        *)
+            help
+            ;;
+    esac
+}
+
+function build_images {
+    docker-compose -f build.yaml build
+}
+
+function deploy_all {
+    kubectl apply -f deployment-app.yaml --validate=false
+    kubectl apply -f deployment-redis.yaml --validate=false
+}
+
+function destroy_all {
+    kubectl delete deployment app-deployment
+    kubectl delete deployment redis-deployment
+    kubectl delete services app-service
+    kubectl delete services redis-service
+}
+
+main
